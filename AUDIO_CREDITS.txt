@@ -1,0 +1,32 @@
+コロピタル0.3「音で感じる季節」音源
+各60秒、MP3 128kbps、モノラル、22.05kHz。総容量11,536,200バイト。
+実録音源を切り出し・音量調整・混合し、4秒の循環クロスフェードで編集。
+四季・朝昼夜はイメージ上の分類です。日本の特定の地域・季節の録音ではありません。
+
+出典：BigSoundBank / LaSonotheque
+確認日：2026-10-29（日本時間）
+各出典ページはCC0(public domain)、編集・アプリ内再配布可能と明示。
+https://bigsoundbank.com/song-of-nocturnal-insect-2-s0425.html
+Nocturnal insect #2 — Joseph SARDIN — CC0
+https://bigsoundbank.com/wind-in-tall-grass-s0908.html
+Wind in Tall Grass — Joseph SARDIN — CC0
+https://bigsoundbank.com/wind-from-inside-3-s1716.html
+Wind from Inside #3 — Joseph SARDIN — CC0
+https://bigsoundbank.com/forest-and-stream-3-s2716.html
+Forest and Stream #3 — Pierre SIBANARCO — CC0
+https://bigsoundbank.com/cicadas-s3002.html
+Cicadas — Clarisse — CC0
+https://creativecommons.org/publicdomain/zero/1.0/
+
+sound-00 春朝: forest + grass
+sound-01 春昼: forest + grass（異なる区間・混合比）
+sound-02 春夜: grass + cricket
+sound-03 夏朝: forest + cicada
+sound-04 夏昼: cicada + grass
+sound-05 夏夜: cricket + grass
+sound-06 秋朝: grass + forest
+sound-07 秋昼: grass
+sound-08 秋夜: cricket + wind
+sound-09 冬朝: wind
+sound-10 冬昼: wind + grass
+sound-11 冬夜: wind（異なる区間・音量）
