@@ -1,4 +1,4 @@
-const APP_CACHE='watashiplus-shell-hata-v102-credit-20261030';
+const APP_CACHE='watashiplus-shell-hata-v103-20261030';
 self.addEventListener('install',e=>e.waitUntil(caches.open(APP_CACHE).then(c=>c.addAll(['./index.html','./app.js','./logo.png','./nikaido-logo.jpg'])).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('watashiplus-shell-')&&k!==APP_CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==self.location.origin||!u.pathname.startsWith(new URL('./',self.location.href).pathname)||u.pathname.includes('/audio/'))return;if(e.request.mode==='navigate'){e.respondWith(fetch(e.request).catch(()=>caches.match('./index.html')));return}e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request)))});
