@@ -1,5 +1,5 @@
-const APP_CACHE='watashiplus-shell-hata-v105-20261030';
-const SHELL=['./index.html','./app-v1.05.js','./logo.png','./nikaido-logo.jpg'];
+const APP_CACHE='watashiplus-shell-hata-v106-20261030';
+const SHELL=['./index.html','./app-v1.06.js','./logo.png','./nikaido-logo.jpg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(APP_CACHE).then(async c=>{for(const url of SHELL){const r=await fetch(new Request(url,{cache:'reload'}));if(!r.ok)throw Error('Incomplete app update');await c.put(url,r)}}).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('watashiplus-shell-')&&k!==APP_CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==self.location.origin||!u.pathname.startsWith(new URL('./',self.location.href).pathname)||u.pathname.includes('/audio/'))return;e.respondWith((async()=>{const cache=await caches.open(APP_CACHE);try{const response=await fetch(e.request,{cache:'no-cache'});if(!response.ok)throw Error('HTTP '+response.status);await cache.put(e.request,response.clone());return response}catch(err){const saved=await cache.match(e.request);if(saved)return saved;if(e.request.mode==='navigate'){const index=await cache.match('./index.html');if(index)return index}throw err}})())});
