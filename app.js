@@ -191,7 +191,21 @@ document.addEventListener('submit',e=>e.preventDefault());
 $('modal').addEventListener('cancel',()=>stopRecord());
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopNoise();if(overlayCleanup)closeOverlay();stopRecord();if(window.speechSynthesis)speechSynthesis.cancel()}});
 window.addEventListener('beforeunload',()=>{stopNoise();stopRecord();if(overlayCleanup)overlayCleanup()});
-async function boot(){try{const version=document.getElementById('appVersion');if(version)version.textContent='ver1.13';await openDB();S=await readDB()||defaults();S=normaliseState(S);lang=S.settings.lang||'ja';render();startTrafficMeter();if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});setInterval(tickPlans,1000);if(!S.lastBackup||Date.now()-new Date(S.lastBackup)>7*86400000)setTimeout(()=>toast(L('大切な記録は定期的にバックアップしてください','Back up important records regularly','Sauvegardez régulièrement vos notes importantes')),1600)}catch(e){$('app').innerHTML=`<section class="card"><h1>保存領域を開けません</h1><p>プライベートブラウズを避け、Safariで開いてください。記録の保存ができないため起動を停止しました。</p><p>Storage is unavailable. Please open in a normal Safari window.</p></section>`}}
+async function boot(){
+ let stage='open';
+ try{
+  const version=document.getElementById('appVersion');if(version)version.textContent='ver1.14';
+  await openDB();
+  stage='read';S=await readDB()||defaults();
+  stage='state';S=normaliseState(S);lang=S.settings.lang||'ja';
+  stage='render';render();
+ }catch(error){showStartupFailure114(stage,error);return}
+ // 補助的な通信量計測の失敗で、起動済みの画面やアラームを止めない。
+ try{startTrafficMeter()}catch(error){console.warn('Traffic meter unavailable',error.name)}
+ try{if(navigator.storage?.persist)Promise.resolve(navigator.storage.persist()).catch(()=>{})}catch{}
+ setInterval(tickPlans,1000);
+ if(!S.lastBackup||Date.now()-new Date(S.lastBackup)>7*86400000)setTimeout(()=>toast(L('大切な記録は定期的にバックアップしてください','Back up important records regularly','Sauvegardez régulièrement vos notes importantes')),1600);
+}
 
 // Prototype 0.2. Existing database name and schema remain compatible.
 I.sleep=['睡眠','Sleep','Sommeil'];I.fatigue=['だるさ・生活への影響','Fatigue / daily impact','Fatigue / retentissement'];
@@ -256,7 +270,7 @@ async function flushMeter(){if(!meterPending.length||!S)return;const batch=meter
 function startTrafficMeter(){if(!S)return;mutate(()=>{},{undo:false,refresh:false});for(const e of performance.getEntriesByType('navigation'))meterRecord(e);for(const e of performance.getEntriesByType('resource'))meterRecord(e);try{const obs=new PerformanceObserver(list=>list.getEntries().forEach(meterRecord));obs.observe({type:'resource',buffered:true})}catch{}window.addEventListener('pagehide',()=>flushMeter())}
 function trafficValues(){const month=day().slice(0,7),d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);const previous=day(d).slice(0,7);return [month,previous].map(m=>{const bytes=Number(S.traffic.months[m])||0;if(m<S.traffic.startedAt.slice(0,7))return `<section class="card"><h2>${esc(m)}</h2><p>${L('計測開始前：不明','Before tracking: unknown','Avant le suivi : inconnu')}</p></section>`;return `<section class="card"><h2>${esc(m)}</h2><strong style="font-size:1.8em">${(bytes/1e9).toFixed(6)} GB</strong><p>${(bytes/1e6).toFixed(3)} MB ${bytes>0&&bytes<1000?'('+bytes+' B)':''}</p></section>`}).join('')}
 function trafficView(){return title('traffic')+`<div id="trafficValues">${trafficValues()}</div><section class="card"><p class="notice">${L('ブラウザーが取得できた転送サイズだけの推定です。Wi-Fiを含み、携帯回線の使用量や請求の根拠にはなりません。外部の薬剤情報サイト、ブラウザー内部の通信、取得できないサイズは含みません。','Estimate only from transfer sizes available to the browser, including Wi-Fi. Not a mobile-data or billing counter. External medicine sites, browser-internal traffic and unavailable sizes are excluded.','Estimation des tailles accessibles au navigateur, Wi-Fi inclus. Ni compteur mobile ni base de facturation. Sites externes et trafic inaccessible exclus.')}</p><p>${L('計測開始','Tracking started','Début du suivi')}：${esc(stamp(S.traffic.startedAt))}</p><p>${L('計測開始前・旧版・別ブラウザーの分は含みません。0表示は通信ゼロの保証ではありません。キャッシュ分は加算しません。','No pre-tracking, old-version or other-browser history. A zero reading does not prove zero traffic. Cached resources are not added.','Pas d’historique antérieur ni d’autre navigateur. Zéro affiché ne garantit pas zéro trafic. Cache non ajouté.')}</p>${location.protocol==='file:'?`<p>${L('現在は端末内のHTMLです。ふわナース本体を開く通信は発生しません。','Currently a local HTML file: opening the app itself uses no network.','Fichier HTML local : ouverture sans réseau.')}</p>`:''}</section>`}
-const originalRender=render;render=function(){originalRender();if(page==='traffic')$('app').innerHTML=trafficView();if($('vitalEnd'))$('vitalEnd').onchange=e=>{if(e.target.value){vitalEnd=e.target.value;render()}};if($('womenMonth'))$('womenMonth').onchange=e=>{if(e.target.value){womenMonth=e.target.value;render()}};if(page==='home'){const cards=[...$('app').querySelectorAll('.grid')];cards[cards.length-1].insertAdjacentHTML('beforeend',tile('traffic'))}updateHelpButtons()};
+const originalRender=render;render=function(){originalRender();if(page==='traffic')$('app').innerHTML=trafficView();if($('vitalEnd'))$('vitalEnd').onchange=e=>{if(e.target.value){vitalEnd=e.target.value;render()}};if($('womenMonth'))$('womenMonth').onchange=e=>{if(e.target.value){womenMonth=e.target.value;render()}};updateHelpButtons()};
 const originalStorageInfo=storageInfo;storageInfo=async function(){await originalStorageInfo();const e=$('storageInfo');if(e){try{const x=await navigator.storage.estimate();e.textContent+=` / ${L('使用量GB','Used GB','Go utilisés')}：${(x.usage/1e9).toFixed(4)} GB`}catch{}}};
 HELP.women=()=>[L('項目×日付の月間表です。○＝なし・通常、△＝軽い変化、□＝中程度以上。空欄は未記録。数値・色・左右・月経は補助表示です。','Monthly item-by-day table: ○ none/usual, △ mild/change, □ moderate or more. Blank means unrecorded; numbers and categories are shown separately.','Tableau mensuel : ○ aucun/habituel, △ léger/changement, □ modéré ou plus. Vide = non renseigné.'),L('マスを押してその日の詳細へ。程度は同日の最も強い状態、回数・尿量など累計は最新値です。拡大表示では横に動かせます。','Tap a cell for that day. Highest daily severity, latest cumulative totals. Enlarged view scrolls horizontally.','Touchez une case : détails du jour. Intensité maximale, derniers totaux. Vue agrandie défilante.')];
 HELP.traffic=()=>[L('今月・先月の、ブラウザーで測れたふわナース本体の推定転送量です。Wi-Fiを含みます。','Current and previous month’s measurable app transfer sizes, including Wi-Fi.','Tailles transférées mesurables ce mois et le précédent, Wi-Fi inclus.'),L('計測開始前・外部サイト・未取得分は含みません。携帯料金の計算には使えません。','Excludes pre-tracking, external sites and unavailable data. Not usable for billing.','Hors historique antérieur, sites externes et données inaccessibles. Pas pour facturation.')];
@@ -878,5 +892,17 @@ const renderDesign113=render;
 render=function(){renderDesign113();decoratePage113()};
 // アラーム等は親エディターがh1直後を参照するため、ダイアログのDOM順は変えない。
 setupChrome113();
+
+function showStartupFailure114(stage,error){
+ const labels={open:'保存領域への接続',read:'記録の読み込み',state:'記録形式の確認',render:'画面の表示'};
+ const storage=stage==='open'||stage==='read';
+ const heading=storage?'記録を読み込めません':'画面を表示できません';
+ const text=storage?'端末内の記録を読み込む途中で停止しました。記録やブラウザーのデータは削除せず、下の詳細をお知らせください。':'記録の読み込み後、画面を準備する途中で停止しました。保存領域の故障とは限りません。記録の削除は行っていません。';
+ console.error('Startup failed:',stage,error);
+ $('app').innerHTML=`<section class="card startup-error114" role="alert"><h1>${heading}</h1><p>${text}</p><details open><summary>エラーの詳細</summary><p>処理：${esc(labels[stage]||stage)}</p><p>${esc(error?.name||'Error')}：${esc(error?.message||'詳細を取得できません')}</p></details>${btn('ページを読み直す','startupRetry114','primary')}<p class="muted">ふわナース ver1.14</p></section>`;
+}
+document.addEventListener('click',e=>{
+ if(e.target.closest('[data-action="startupRetry114"]')){e.preventDefault();location.reload()}
+},true);
 
 boot();
