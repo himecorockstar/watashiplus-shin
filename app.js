@@ -191,7 +191,7 @@ document.addEventListener('submit',e=>e.preventDefault());
 $('modal').addEventListener('cancel',()=>stopRecord());
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopNoise();if(overlayCleanup)closeOverlay();stopRecord();if(window.speechSynthesis)speechSynthesis.cancel()}});
 window.addEventListener('beforeunload',()=>{stopNoise();stopRecord();if(overlayCleanup)overlayCleanup()});
-async function boot(){try{const version=document.getElementById('appVersion');if(version)version.textContent='ver1.11';await openDB();S=await readDB()||defaults();S=normaliseState(S);lang=S.settings.lang||'ja';render();startTrafficMeter();if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});setInterval(tickPlans,1000);if(!S.lastBackup||Date.now()-new Date(S.lastBackup)>7*86400000)setTimeout(()=>toast(L('大切な記録は定期的にバックアップしてください','Back up important records regularly','Sauvegardez régulièrement vos notes importantes')),1600)}catch(e){$('app').innerHTML=`<section class="card"><h1>保存領域を開けません</h1><p>プライベートブラウズを避け、Safariで開いてください。記録の保存ができないため起動を停止しました。</p><p>Storage is unavailable. Please open in a normal Safari window.</p></section>`}}
+async function boot(){try{const version=document.getElementById('appVersion');if(version)version.textContent='ver1.12';await openDB();S=await readDB()||defaults();S=normaliseState(S);lang=S.settings.lang||'ja';render();startTrafficMeter();if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});setInterval(tickPlans,1000);if(!S.lastBackup||Date.now()-new Date(S.lastBackup)>7*86400000)setTimeout(()=>toast(L('大切な記録は定期的にバックアップしてください','Back up important records regularly','Sauvegardez régulièrement vos notes importantes')),1600)}catch(e){$('app').innerHTML=`<section class="card"><h1>保存領域を開けません</h1><p>プライベートブラウズを避け、Safariで開いてください。記録の保存ができないため起動を停止しました。</p><p>Storage is unavailable. Please open in a normal Safari window.</p></section>`}}
 
 // Prototype 0.2. Existing database name and schema remain compatible.
 I.sleep=['睡眠','Sleep','Sommeil'];I.fatigue=['だるさ・生活への影響','Fatigue / daily impact','Fatigue / retentissement'];
@@ -570,7 +570,7 @@ if(a==='lcMeasureSave109'){const ml=Number($('lcMeasureMl109').value),abv=$('lcM
 }catch(err){console.error('LAST CALL',err);toast('保存できませんでした。入力内容と空き容量を確認してください。')}finally{lcBusy109=false;if(b.isConnected)b.disabled=false}},true);
 
 const memoButtons109=memoButtons106;memoButtons106=function(){memoButtons109();if($('planNote106'))$('planNote106').disabled=['requesting','recording','processing'].includes(record106?.stage)};
-const FUWA_GUIDE110="<section class=\"guide-intro110\"><h1>ふわナースの使い方</h1><p>入院中の大学生が、一日使う例です。全部の機能を覚える必要はありません。まずは「体調と測定データ」「日記帳」「ボイスメモ」の３つから始めましょう。</p><p><strong>表紙</strong>は最初の画面です。「戻る」で１つ前へ、「表紙へ」で最初の画面へ戻れます。困ったら「説明」を押すと、その画面の使い方が出ます。説明を閉じ、説明をOFFにすると普通に操作できます。</p></section>\n<section class=\"card\"><h2>朝７時：起きたら、今の体調を残す</h2><ol><li>表紙の「体調と測定データ」を押します。</li><li>「体調を記録する」を押します。</li><li>当てはまる症状を選びます。痛みは０（痛くない）～５（最も強い痛み）です。気分や睡眠など、分かる項目だけで大丈夫です。</li><li>「体調を保存」を押し、保存できた表示を確認します。</li><li>「戻る」で前の画面へ戻ります。</li></ol><p>体温などの測定値があれば、「測定値とグラフ」の「データ記録・変更」から入力して保存します。薄い数字は前回の値です。今回の値を確認し、保存する項目にチェックを付けます。日付を変えれば、昨日の記録も後から入れられます。</p></section>\n<section class=\"card\"><h2>朝８時：薬を飲んだことを記録する</h2><ol><li>表紙の「すべての機能を開く」から「お薬の記録」を選びます。</li><li>薬名・量・単位などを、薬の説明書や病院の指示を見ながら登録します。難しければ登録は手伝ってもらってください。</li><li>実際に飲んだ後に、該当する薬や食後のグループを選び、内容を確認して服用を記録します。</li></ol><p>飲んだか分からないときは「飲んだか不明」を使います。アプリの記録だけで、もう一度飲むかを決めず、看護師さんなどに確認してください。残量は実物に合わせて自分で更新します。</p></section>\n<section class=\"card\"><h2>午前10時：先生に聞きたいことをメモする</h2><ol><li>「すべての機能を開く」から「先生・看護師さんに聞くこと」を押します。</li><li>聞きたいことを短く書き、「追加して保存」を押します。</li><li>聞けた項目にはチェックを付けます。</li></ol><p>診察の前には「診察で見せる記録」を開き、期間と見せる項目を選びます。画面の内容を自分で確認してから見せます。日記の本文や写真は自動では入りません。</p></section>\n<section class=\"card\"><h2>昼12時：一言の日記と写真を残す</h2><ol><li>表紙の「日記帳」→「日記を書く」を押します。</li><li>白い欄に「昼ごはんがおいしかった」など、好きなことを書きます。</li><li>写真を付けたいときは写真の選択欄を押します。「ファイル・クラウドから写真を選ぶ」も使えます。</li><li>「保存」を押し、保存できた表示を確認して戻ります。</li></ol><p>写真を付けず、文字だけでも使えます。体調は「体調と測定データ」にまとめます。以前の日記は「編集」で直せます。「内容検索」では、覚えている言葉の一部分や日付から探せます。クラウドにある写真を選べるかは、スマホの設定によります。</p></section>\n<section class=\"card\"><h2>午後３時：書く代わりに、声でメモする</h2><ol><li>表紙の「ボイスアラーム・ボイスメモ」を押します。</li><li>「ボイスメモを録音」→「録音」を押します。初めてマイクの許可を聞かれたら「許可」を選びます。</li><li>話し終わったら「停止」を押します。１件最長20秒です。</li><li>自動保存できた表示を確認します。「聞く」で録った声を確認し、「戻る」を押します。</li></ol><p>文字は何も書かなくて大丈夫です。録音した日時が秒まで自動で残ります。後で日付から探して「再生」を押せます。録音や保存に失敗した表示が出たら、保存済みと考えず、その画面の案内を確認してください。</p></section>\n<section class=\"card\"><h2>午後４時：予定を声で知らせる設定をする</h2><ol><li>「ボイスアラーム・ボイスメモ」→「ボイスアラームを追加」を押します。</li><li>新しく作るときは現在の時刻が出ます。時・分のダイヤルを上下になぞって、知らせたい時刻に変えます。日付も確認してください。</li><li>「約束の時間です」などの文を押すか、「読み上げる内容」に自由に書きます。選択した文の後にも書き足せます。</li><li>必要なら繰り返しを選びます。入力後の「自動保存しました」を確認して戻ります。</li><li>一覧の「アラームを有効にする（音を確認）」を押します。「試し聞き」で内容と音量を確認します。</li></ol><p>文字は上から続けて１回読みます。録音した場合はその声、ブザー・ベルを選んだ場合はその音になります。音を止めたいときは「読み上げ・音を止める」を押します。</p><p><strong>アラームは、このアプリを表示している間の補助機能です（他のページでも時刻を確認します）。</strong>画面をロックしたり、他のアプリへ移ったりすると、予定時刻に鳴る保証はありません。大切な予定はスマホ本体のアラームも設定してください。</p></section>\n<section class=\"card\"><h2>夕方６時：少し休む</h2><p>「すべての機能を開く」から、ミニゲーム、写真立て、自然音、手鏡を選べます。ゲームのヒントは各ゲーム内にあります。手鏡は表紙の看板を１秒長押しでも開けます。手鏡の「終了」を押すとカメラが止まります。</p><p>自然音は好きな季節と時間帯を選んで再生します。停止ボタンで止められます。音量と周囲への配慮を忘れずに。</p></section>\n<section class=\"card\"><h2>夜９時：一日を残して終わる</h2><ol><li>体調の変化があれば、「体調と測定データ」に追加します。</li><li>「日記帳」に今日のことを一言だけでも書いて保存します。</li><li>録音などの処理が終わり、保存できた表示を確認してから画面を閉じます。</li></ol><p>毎日すべてを埋めなくても大丈夫です。残したいことだけ、無理のない範囲で使ってください。</p></section>\n<section class=\"card\"><h2>大切な記録を守る</h2><ol><li>ときどき「バックアップ・機種変更」を開きます。</li><li>「バックアップを書き出す」を押します。</li><li>保存できたファイルを、スマホ以外の自分の保管先にも残します。難しければ、信頼できる人に保存を手伝ってもらってください。</li></ol><p>スマホを替えても、記録は自動では引き継がれません。新しいスマホでバックアップを読み込み、記録を確認するまで、古いスマホの記録を消さないでください。バックアップには日記・写真・録音などが入るので、渡す相手に注意してください。</p><p>「ごみ箱へ」に移したものは、ごみ箱から戻せます。「完全削除」は取り消せません。ブラウザーのデータ削除は、アプリ内の記録を失う原因になります。</p></section>\n<section class=\"card\"><h2>その他：LAST CALL</h2><p>飲酒記録は「LAST CALL」を開くと、見出しのすぐ下に操作手順が表示されます。商品・度数・量を自分で確認して記録する機能です。</p></section>\n<section class=\"card\"><h2>追加：ゲーム50種類と推理クイズ150問</h2><p>「ミニゲーム50」では、各ゲームを開くと、そのゲームの短い遊び方が出ます。盤面は広い画面で操作できます。ゲームの一覧へ戻る操作と表紙へ戻る操作は、移動先が異なる場合に両方表示します。</p><p>「推理クイズ150」では、簡単・普通・難しいを選びます。各50問をランダムな順番で出し、一巡するまでは同じ問題を出しません。答えを選ぶと理由を読めます。「次の問題」で進みます。コースを選び直すと、新しい順番で最初から始まります。</p><h2>追加：アラームの期限</h2><p>１回だけのアラームは、設定時刻の24時間後に一覧から削除し、ごみ箱へ移動します。閉じている間に期限が来た場合は、次に開いた時に処理します。繰り返しと録音メモはこの自動削除の対象外です。時刻を５分以上過ぎてから復帰したアラームは、遅れて鳴らさない仕様です。</p></section>";
+const FUWA_GUIDE110="<section class=\"guide-intro110\"><h1>ふわナースの使い方</h1><p>入院中の大学生が、一日使う例です。全部の機能を覚える必要はありません。まずは「体調と測定データ」「日記帳」「ボイスメモ」の３つから始めましょう。</p><p><strong>表紙</strong>は最初の画面です。「戻る」で１つ前へ、「表紙へ」で最初の画面へ戻れます。困ったら「説明」を押すと、その画面の使い方が出ます。説明を閉じ、説明をOFFにすると普通に操作できます。</p></section>\n<section class=\"card\"><h2>朝７時：起きたら、今の体調を残す</h2><ol><li>表紙の「体調と測定データ」を押します。</li><li>「体調を記録する」を押します。</li><li>当てはまる症状を選びます。痛みは０（痛くない）～５（最も強い痛み）です。気分や睡眠など、分かる項目だけで大丈夫です。</li><li>「体調を保存」を押し、保存できた表示を確認します。</li><li>「戻る」で前の画面へ戻ります。</li></ol><p>体温などの測定値があれば、「測定値とグラフ」の「データ記録・変更」から入力して保存します。薄い数字は前回の値です。今回の値を確認し、保存する項目にチェックを付けます。日付を変えれば、昨日の記録も後から入れられます。</p></section>\n<section class=\"card\"><h2>朝８時：薬を飲んだことを記録する</h2><ol><li>表紙の「すべての機能を開く」から「お薬の記録」を選びます。</li><li>薬名・量・単位などを、薬の説明書や病院の指示を見ながら登録します。難しければ登録は手伝ってもらってください。</li><li>実際に飲んだ後に、該当する薬や食後のグループを選び、内容を確認して服用を記録します。</li></ol><p>飲んだか分からないときは「飲んだか不明」を使います。アプリの記録だけで、もう一度飲むかを決めず、看護師さんなどに確認してください。残量は実物に合わせて自分で更新します。</p></section>\n<section class=\"card\"><h2>午前10時：先生に聞きたいことをメモする</h2><ol><li>「すべての機能を開く」から「先生・看護師さんに聞くこと」を押します。</li><li>聞きたいことを短く書き、「追加して保存」を押します。</li><li>聞けた項目にはチェックを付けます。</li></ol><p>診察の前には「診察で見せる記録」を開き、期間と見せる項目を選びます。画面の内容を自分で確認してから見せます。日記の本文や写真は自動では入りません。</p></section>\n<section class=\"card\"><h2>昼12時：一言の日記と写真を残す</h2><ol><li>表紙の「日記帳」→「日記を書く」を押します。</li><li>白い欄に「昼ごはんがおいしかった」など、好きなことを書きます。</li><li>写真を付けたいときは写真の選択欄を押します。「ファイル・クラウドから写真を選ぶ」も使えます。</li><li>「保存」を押し、保存できた表示を確認して戻ります。</li></ol><p>写真を付けず、文字だけでも使えます。体調は「体調と測定データ」にまとめます。以前の日記は「編集」で直せます。「内容検索」では、覚えている言葉の一部分や日付から探せます。クラウドにある写真を選べるかは、スマホの設定によります。</p></section>\n<section class=\"card\"><h2>午後３時：書く代わりに、声でメモする</h2><ol><li>表紙の「ボイスアラーム・ボイスメモ」を押します。</li><li>「ボイスメモを録音」→「録音」を押します。初めてマイクの許可を聞かれたら「許可」を選びます。</li><li>話し終わったら「停止」を押します。１件最長20秒です。</li><li>自動保存できた表示を確認します。「聞く」で録った声を確認し、「戻る」を押します。</li></ol><p>文字は何も書かなくて大丈夫です。録音した日時が秒まで自動で残ります。後で日付から探して「再生」を押せます。録音や保存に失敗した表示が出たら、保存済みと考えず、その画面の案内を確認してください。</p></section>\n<section class=\"card\"><h2>午後４時：予定を声で知らせる設定をする</h2><ol><li>「ボイスアラーム・ボイスメモ」→「ボイスアラームを追加」を押します。</li><li>新しく作るときは現在の時刻が出ます。時・分のダイヤルを上下になぞって、知らせたい時刻に変えます。日付も確認してください。</li><li>「約束の時間です」などの文を押すか、「読み上げる内容」に自由に書きます。選択した文の後にも書き足せます。</li><li>必要なら繰り返しを選びます。入力後の「自動保存しました」を確認して戻ります。</li><li>一覧の「アラームを有効にする（音を確認）」を押します。「試し聞き」で内容と音量を確認します。</li></ol><p>文字は上から続けて１回読みます。録音した場合はその声、ブザー・ベルを選んだ場合はその音になります。音を止めたいときは「読み上げ・音を止める」を押します。</p><p><strong>アラームは、このアプリを表示している間の補助機能です（他のページでも時刻を確認します）。</strong>画面をロックしたり、他のアプリへ移ったりすると、予定時刻に鳴る保証はありません。大切な予定はスマホ本体のアラームも設定してください。</p></section>\n<section class=\"card\"><h2>夕方６時：少し休む</h2><p>「すべての機能を開く」から、ミニゲーム、写真立て、自然音、手鏡を選べます。ゲームのヒントは各ゲーム内にあります。手鏡は表紙の看板を１秒長押しでも開けます。手鏡の「終了」を押すとカメラが止まります。</p><p>自然音は好きな季節と時間帯を選んで再生します。停止ボタンで止められます。音量と周囲への配慮を忘れずに。</p></section>\n<section class=\"card\"><h2>夜９時：一日を残して終わる</h2><ol><li>体調の変化があれば、「体調と測定データ」に追加します。</li><li>「日記帳」に今日のことを一言だけでも書いて保存します。</li><li>録音などの処理が終わり、保存できた表示を確認してから画面を閉じます。</li></ol><p>毎日すべてを埋めなくても大丈夫です。残したいことだけ、無理のない範囲で使ってください。</p></section>\n<section class=\"card\"><h2>大切な記録を守る</h2><ol><li>ときどき「バックアップ・機種変更」を開きます。</li><li>「バックアップを書き出す」を押します。</li><li>保存できたファイルを、スマホ以外の自分の保管先にも残します。難しければ、信頼できる人に保存を手伝ってもらってください。</li></ol><p>スマホを替えても、記録は自動では引き継がれません。新しいスマホでバックアップを読み込み、記録を確認するまで、古いスマホの記録を消さないでください。バックアップには日記・写真・録音などが入るので、渡す相手に注意してください。</p><p>「ごみ箱へ」に移したものは、ごみ箱から戻せます。「完全削除」は取り消せません。ブラウザーのデータ削除は、アプリ内の記録を失う原因になります。</p></section>\n<section class=\"card\"><h2>その他：LAST CALL</h2><p>飲酒記録は「LAST CALL」を開くと、見出しのすぐ下に操作手順が表示されます。商品・度数・量を自分で確認して記録する機能です。</p></section>\n<section class=\"card\"><h2>言葉・観察・状況推理のゲームとクイズ</h2><p>「ミニゲーム50」は言葉・観察・状況推理の47テーマと、絵合わせ・消灯・迷路です。計算や数字の答えを求めるゲームを入れ替えました。テーマを開き、本文を読んで言葉の答えを選びます。各テーマ３問を順不同で出し、一巡までは重複しません。クイズと問題を一部共有します。盤面は広い画面で操作できます。ゲームの一覧へ戻る操作と表紙へ戻る操作は、移動先が異なる場合に両方表示します。</p><p>「推理クイズ150」では、簡単・普通・難しいを選びます。各50問をランダムな順番で出し、一巡するまでは同じ問題を出しません。全問、答えは数字ではなく言葉です。問題文は平均約90文字、最長800文字以内。言葉遊び、観察、舞台、旅館、手紙、証言など多ジャンルです。各コースに少し長い推理短編を３問含みます。答えを選ぶと理由を読めます。「次の問題」で進みます。コースを選び直すと、新しい順番で最初から始まります。</p><h2>追加：アラームの期限</h2><p>１回だけのアラームは、設定時刻の24時間後に一覧から削除し、ごみ箱へ移動します。閉じている間に期限が来た場合は、次に開いた時に処理します。繰り返しと録音メモはこの自動削除の対象外です。時刻を５分以上過ぎてから復帰したアラームは、遅れて鳴らさない仕様です。</p></section><section class=\"card\"><h2>読み上げる内容の入力欄</h2><p>ボイスアラームの「読み上げる内容」は、約30文字が見える小さな欄にしました。これは文字数の上限ではありません。長い文も入力でき、欄の中を上下に動かして確認できます。自動保存と、全文を続けて読む動作はそのままです。</p></section>";
 // v1.10: editable alarm clock, full-screen memo editor, consistent navigation, guide.
 function clockParts110(value){const m=/^(\d{2}):(\d{2})$/.exec(value||'');return m?[m[1],m[2]]:localDT().slice(11,16).split(':')}
 function alarmClock110(value){const [h,m]=clockParts110(value);return `<section class="alarm-clock110" role="group" aria-label="アラームの時刻"><h2>知らせる時刻</h2><div class="clock-row110">${select('時','alarmHour110',Array.from({length:24},(_,i)=>{const n=String(i).padStart(2,'0');return [n,n+'時']}),h)}<span aria-hidden="true">：</span>${select('分','alarmMinute110',Array.from({length:60},(_,i)=>{const n=String(i).padStart(2,'0');return [n,n+'分']}),m)}</div><p id="clockDisplay110" aria-live="polite">設定時刻：${h}：${m}</p>${btn('現在の日付・時刻に合わせる','alarmNow110')}<p>「時」「分」をタッチして変更します。日付も確認してください。</p></section>`}
@@ -681,4 +681,83 @@ HELP.games=()=>['50種類から好きなゲームを選びます。ゲーム画�
 help107.plans=['新しい登録・変更が上に表示されます。最初に「アラームを有効にする（音を確認）」を押して、音が出ることを確かめてください。','時・分はダイヤルを上下になぞるか▲▼で変更します。入力後の保存表示を確認してください。アプリを表示中は他のページでも時刻を確認します。','１回だけのアラームは設定時刻の24時間後にごみ箱へ移動します。繰り返しと録音メモは対象外です。ロック中などの確実な通知はできません。'];
 
 const syncWheels111=syncAlarmClock110;syncAlarmClock110=async function(){paintWheel111('alarmHour110');paintWheel111('alarmMinute110');return syncWheels111()};
+// v1.12: 言葉・観察・状況推理。元の非数値盤面３種は維持。
+const BOARD_IDS112=new Set([24,25,29]);
+const WORD_SLOT112=new Map();
+let wordTopic112=0;
+for(let id=0;id<50;id++){
+  if(BOARD_IDS112.has(id))continue;
+  const theme=WORD_THEMES112[wordTopic112];
+  WORD_SLOT112.set(id,wordTopic112++);
+  GAME_NAMES[id]=[theme.name,theme.name,theme.name];
+  GAME_RULES111[id]=theme.rule;
+}
+const wordDeck112=new Map();
+function wordQuestion112(id){
+  const topic=WORD_SLOT112.get(id);
+  if(topic===undefined)return null;
+  let deck=wordDeck112.get(id);
+  if(!deck?.length){deck=shuffle(['easy','normal','hard']);wordDeck112.set(id,deck)}
+  const level=deck.pop(),q=REASONING_BANK111[level][topic];
+  return {prompt:q.prompt,correct:q.options[q.answer],wrong:q.options.filter((_,i)=>i!==q.answer),explain:q.explanation,sourceId:q.id,level};
+}
+const boardStart112=startGame;
+startGame=function(id){
+  if(!Number.isInteger(id)||id<0||id>=50)return;
+  if(BOARD_IDS112.has(id)){boardStart112(id);return}
+  // 再出題で過去のダイアログを積み上げない。
+  if($('modal').open)$('modal').close();
+  modalTrail=[];
+  gameState={id,start:Date.now(),done:false,q:wordQuestion112(id)};
+  gameState.answers=shuffle([gameState.q.correct,...gameState.q.wrong]);
+  modal(`<h1>${esc(GAME_NAMES[id][0])}</h1><section class="game-rules111"><h2>遊び方</h2><p>${esc(GAME_RULES111[id])}</p><p>４つから選ぶと答えと理由が出ます。時間制限はありません。</p></section><div class="game-board word-prompt112">${esc(gameState.q.prompt)}</div><div class="answers">${gameState.answers.map((a,i)=>btn(esc(a),'gameAnswer:'+i)).join('')}</div><p id="gameResult" role="status"></p><div class="row">${btn('もう一勝負','game:'+id)}${btn('ヒント','gameHint')}</div>`);
+  $('modal').classList.add('game-full111');
+  $('modal').dataset.help107='game111-'+id;
+  $('modal').scrollTop=0;
+  trimNavigation111();
+};
+const boardHint112=gameHint103;
+gameHint103=function(){
+  if(!WORD_SLOT112.has(gameState?.id))return boardHint112();
+  if(gameState.done)return;
+  const wrong=[...document.querySelectorAll('[data-action^="gameAnswer:"]')].find(b=>!b.disabled&&gameState.answers[+b.dataset.action.split(':')[1]]!==gameState.q.correct);
+  if(wrong){wrong.disabled=true;toast('違う選択肢を１つ減らしました')}
+};
+const answer112=gameAnswer;
+gameAnswer=function(i){
+  if(WORD_SLOT112.has(gameState?.id)){
+    if(gameState.done||!Number.isInteger(i)||i<0||i>=gameState.answers.length)return;
+    answer112(i);
+    document.querySelectorAll('[data-action^="gameAnswer:"]').forEach(b=>b.disabled=true);
+    return;
+  }
+  return answer112(i);
+};
+for(const [id] of WORD_SLOT112){
+  const key='game111-'+id;
+  I[key]=[GAME_NAMES[id][0],GAME_NAMES[id][0],GAME_NAMES[id][0]];
+  HELP[key]=()=>[GAME_RULES111[id],'各テーマ３問を順不同で出します。一巡までは重複せず、もう一勝負で続けられます。推理クイズと一部共通の問題です。'];
+}
+gamesView=function(){return title('games')+'<p>言葉・観察・状況推理の47テーマと、絵合わせ・消灯・迷路の３種類です。計算や数字の答えを求めるゲームは入れ替えました。各テーマ３問で、一巡するまで重複しません。推理クイズと一部共通です。</p>'+btn('推理クイズ３コースを開く','reasonCourse111')+`<div class="grid">${GAME_NAMES.map((n,i)=>btn(`<small>${String(i+1).padStart(2,'0')}</small><strong>${esc(n[0])}</strong>`,'game:'+i,'tile','game111-'+i)).join('')}</div>`};
+HELP.games=()=>['言葉・観察・状況推理の47テーマと、絵合わせ・消灯・迷路から選びます。各テーマの短い遊び方が出ます。','答えは言葉で選びます。テーマごとに３問を順不同で出し、一巡後は再抽選します。推理クイズと問題を一部共有しています。'];
+reasoningMenu111=function(){
+  if($('modal').open)$('modal').close();modalTrail=[];
+  modal('<h1>推理クイズ</h1><p>簡単・普通・難しいに各50問。コース内は一巡まで重複しないランダム順です。答えは全問、数字ではなく言葉で選びます。</p><div class="quiz-courses111">'+Object.entries(COURSE_NAMES111).map(([k,n])=>btn(n+'・50問','reasonBegin111:'+k,'primary')).join('')+'</div><p>簡単：言葉遊び・観察。普通：条件整理・行動の推理。難しい：視点の転換・証言・状況推理。各コースに推理短編を３問ずつ含みます。</p><p>問題文は平均約90文字、最長800文字以内。今回の150問は創作です。全問に答えと理由があり、知識の暗記や計算を中心にしていません。</p>');
+  $('modal').classList.add('game-full111');$('modal').dataset.help107='reasonquiz';trimNavigation111();
+};
+HELP.reasonquiz=()=>['言葉・観察・状況推理の創作問題です。簡単・普通・難しいに各50問、計150問あります。答えは言葉で選びます。','コース内の一巡までは重複しません。長い推理短編も時々出ます。答えを選ぶと理由が表示されます。制限時間はありません。'];
+const planEdit112=planEdit;
+planEdit=async function(id,voiceOnly=false){
+  await planEdit112(id,voiceOnly);
+  const text=$('planNote106');
+  if(!memo106||memo106.voiceOnly||!text)return;
+  text.classList.add('compact-note112');
+  text.rows=2;
+  text.style.minHeight='0';
+  text.style.height='4.2em';
+  text.style.width='16em';
+  text.style.maxWidth='100%';
+  text.placeholder='文章を入力（長文も可）';
+};
+
 boot();
