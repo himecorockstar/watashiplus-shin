@@ -194,7 +194,7 @@ window.addEventListener('beforeunload',()=>{stopNoise();stopRecord();if(overlayC
 async function boot(){
  let stage='open';
  try{
-  const version=document.getElementById('appVersion');if(version)version.textContent='ver1.21';
+  const version=document.getElementById('appVersion');if(version)version.textContent='ver1.22';
   await openDB();
   stage='read';S=await readDB()||defaults();
   stage='state';S=normaliseState(S);lang=S.settings.lang||'ja';
@@ -898,7 +898,7 @@ function showStartupFailure114(stage,error){
  const heading=storage?'記録を読み込めません':'画面を表示できません';
  const text=storage?'端末内の記録を読み込む途中で停止しました。記録やブラウザーのデータは削除せず、下の詳細をお知らせください。':'記録の読み込み後、画面を準備する途中で停止しました。保存領域の故障とは限りません。記録の削除は行っていません。';
  console.error('Startup failed:',stage,error);
- $('app').innerHTML=`<section class="card startup-error114" role="alert"><h1>${heading}</h1><p>${text}</p><details open><summary>エラーの詳細</summary><p>処理：${esc(labels[stage]||stage)}</p><p>${esc(error?.name||'Error')}：${esc(error?.message||'詳細を取得できません')}</p></details>${btn('ページを読み直す','startupRetry114','primary')}<p class="muted">ふわナース ver1.21</p></section>`;
+ $('app').innerHTML=`<section class="card startup-error114" role="alert"><h1>${heading}</h1><p>${text}</p><details open><summary>エラーの詳細</summary><p>処理：${esc(labels[stage]||stage)}</p><p>${esc(error?.name||'Error')}：${esc(error?.message||'詳細を取得できません')}</p></details>${btn('ページを読み直す','startupRetry114','primary')}<p class="muted">ふわナース ver1.22</p></section>`;
 }
 document.addEventListener('click',e=>{
  if(e.target.closest('[data-action="startupRetry114"]')){e.preventDefault();location.reload()}
@@ -1212,5 +1212,16 @@ HELP.home=()=>['表紙には５つの分類があります。開けるのは一�
 // 初回に同じ「有効化」を２か所へ出さない。通知の状態と音を止める操作を分ける。
 const plans121=plansView;plansView=function(){let html=plans121().replace(/<button[^>]*data-action="quiet105"[^>]*>[\s\S]*?<\/button>/g,'');const pause=btn('自動通知を停止する','quiet105').replace('<button','<button id="alarmPause121"'+(S.settings.quietMode===false?'':' hidden'));return html.replace(/(<button[^>]*data-action="alarmArm111"[^>]*>)[\s\S]*?(<\/button>)/,(_,start,end)=>start+(S.settings.quietMode===false?'音をもう一度確認する':'アラームを有効にする（音を確認）')+end+pause)};
 const alarmStatus121=statusAlarm111;statusAlarm111=function(){alarmStatus121();const pause=$('alarmPause121');if(pause)pause.hidden=S?.settings.quietMode!==false;const arm=document.querySelector('[data-action="alarmArm111"]');if(arm)arm.textContent=S?.settings.quietMode===false?'音をもう一度確認する':'アラームを有効にする（音を確認）'};
+
+// 表紙の時計は端末のタイムゾーンを使い、次の分に合わせて更新する。
+let homeClockTimer122=null;
+function homeClockText122(now=new Date()){return {date:new Intl.DateTimeFormat('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'}).format(now),time:new Intl.DateTimeFormat('ja-JP',{hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(now),iso:now.toISOString()}}
+function homeClockHtml122(now=new Date()){const c=homeClockText122(now);return `<time id="homeClock122" datetime="${c.iso}" aria-label="現在の日付と時刻"><span class="home-date122">${esc(c.date)}</span><span class="home-time122">${esc(c.time)}</span></time>`}
+const home122=homeView;homeView=function(){return home122().replace(/<div class="hero-top113">[\s\S]*?<\/div>/,'<div class="hero-top113"><span class="personal113">HIMECORO</span>'+homeClockHtml122()+'</div>').replace(/<div class="hero-caption113"><h1>[\s\S]*?<\/h1>/,'<div class="hero-caption113"><h1 class="gold-plaque122"><span class="gold-engraving122">不安は一つ、ファンは１万人</span></h1>')};
+function updateHomeClock122(){const el=$('homeClock122');if(page!=='home'||!el)return;const c=homeClockText122();el.dateTime=c.iso;el.innerHTML='<span class="home-date122">'+esc(c.date)+'</span><span class="home-time122">'+esc(c.time)+'</span>'}
+function syncHomeClock122(){if(homeClockTimer122!==null){clearTimeout(homeClockTimer122);homeClockTimer122=null}if(page!=='home'||document.hidden)return;updateHomeClock122();homeClockTimer122=setTimeout(()=>{homeClockTimer122=null;syncHomeClock122()},60000-Date.now()%60000+30)}
+const render122=render;render=function(){render122();syncHomeClock122()};
+document.addEventListener('visibilitychange',syncHomeClock122);
+HELP.home=()=>['表紙は５分類から選びます。色が付いて開くのは一度に１か所だけです。選ばれていない分類は白く表示します。','別の分類を選ぶと、前の色と展開は解除されます。同じ分類をもう一度押すと閉じます。','上部には応援の金色プレートと、端末設定に従う現在の日付・時刻を表示します。時計は毎分更新します。',DATA_NOTE116];help107.home=HELP.home();
 
 boot();
